@@ -11,10 +11,10 @@ type User struct {
 	Password   string    `json:"password" gorm:"type: varchar(255)"`
 	ListAsRole string    `json:"-" gorm:"type: varchar(225)"`
 	ListAs     ListAs    `json:"list_as" gorm:"foreignKey:ListAsRole"`
-	Image      string    `json:"image" gorm:"type: varchar(255)"`
 	Gendre     string    `json:"gendre" gorm:"type: varchar(255)"`
 	Phone      string    `json:"phone" gorm:"type: varchar(255)"`
 	Address    string    `json:"address" gorm:"type: varchar(225)"`
+	Image      string    `json:"image" gorm:"type: varchar(255)"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
 }

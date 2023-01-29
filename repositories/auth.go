@@ -23,7 +23,7 @@ func (r *repository) SignUp(user models.User) (models.User, error) {
 
 func (r *repository) SignIn(username string) (models.User, error) {
 	var user models.User
-	err := r.db.First(&user, "username = ?", username).Error
+	err := r.db.Where("username = ?", username).First(&user).Error
 
 	return user, err
 }
