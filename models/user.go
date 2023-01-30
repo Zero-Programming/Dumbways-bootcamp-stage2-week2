@@ -29,7 +29,7 @@ type UserProfileRespone struct {
 	Gender   string `json:"gender"`
 	Phone    string `json:"phone"`
 	Address  string `json:"address"`
-	Image    string `json:"imgae"`
+	Image    string `json:"image"`
 }
 
 func (UserProfileRespone) TableName() string {

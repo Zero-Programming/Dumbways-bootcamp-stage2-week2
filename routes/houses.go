@@ -14,4 +14,5 @@ func HouseRoutes(r *mux.Router) {
 
 	r.HandleFunc("/houses", h.FindHouses).Methods("GET")
 	r.HandleFunc("/house/{id}", h.GetHouse).Methods("GET")
+	r.HandleFunc("/house", h.CreateHouse).Methods("POST")
 }
