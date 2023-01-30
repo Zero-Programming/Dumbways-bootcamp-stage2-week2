@@ -53,20 +53,6 @@ func (h *handlerUser) GetUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-func convertResponse(u models.User) usersdto.UserResponse {
-	return usersdto.UserResponse{
-		ID:       u.ID,
-		Fullname: u.Fullname,
-		Username: u.Username,
-		Password: u.Password,
-		ListAs:   models.ListAsResponse(u.ListAs),
-		Gendre:   u.Gender,
-		Phone:    u.Phone,
-		Address:  u.Address,
-		Image:    u.Image,
-	}
-}
-
 func (h *handlerUser) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -89,6 +75,20 @@ func (h *handlerUser) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	response := dto.SuccessResult{Code: http.StatusOK, Data: convertResponse(data)}
+	response := dto.SuccessResult{Code: http.StatusOK, Data: data}
 	json.NewEncoder(w).Encode(response)
+}
+
+func convertResponse(u models.User) usersdto.UserResponse {
+	return usersdto.UserResponse{
+		ID:         u.ID,
+		Fullname:   u.Fullname,
+		Username:   u.Username,
+		Password:   u.Password,
+		ListAsRole: u.ListAsRole,
+		Gendre:     u.Gender,
+		Phone:      u.Phone,
+		Address:    u.Address,
+		Image:      u.Image,
+	}
 }

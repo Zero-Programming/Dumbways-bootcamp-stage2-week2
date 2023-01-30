@@ -57,19 +57,28 @@ func (h *handlerHouse) GetHouse(w http.ResponseWriter, r *http.Request) {
 func (h *handlerHouse) CreateHouse(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	request := new(housesdto.HouseRequest)
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
-		json.NewEncoder(w).Encode(response)
-		return
+	dataContex := r.Context().Value("dataFile") // add this code
+	filename := dataContex.(string)             // add this code
+
+	price, _ := strconv.Atoi(r.FormValue("price"))
+	bedroom, _ := strconv.Atoi(r.FormValue("bedroom"))
+	bathroom, _ := strconv.Atoi(r.FormValue("bathroom"))
+	request := housesdto.HouseRequest{
+		Name:      r.FormValue("name"),
+		CityName:  r.FormValue("city_name"),
+		Address:   r.FormValue("address"),
+		TypeRent:  r.FormValue("type_rent"),
+		Amenities: datatypes.JSON(r.FormValue("amenities")),
+		Price:     price,
+		Bedroom:   bedroom,
+		Bathroom:  bathroom,
 	}
 
 	validation := validator.New()
 	err := validation.Struct(request)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+		w.WriteHeader(http.StatusInternalServerError)
+		response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}
 		json.NewEncoder(w).Encode(response)
 		return
 	}
@@ -83,26 +92,74 @@ func (h *handlerHouse) CreateHouse(w http.ResponseWriter, r *http.Request) {
 		Amenities: request.Amenities,
 		Bedroom:   request.Bedroom,
 		Bathroom:  request.Bathroom,
-		Image:     datatypes.JSON(request.Image),
+		Image:     filename,
 	}
 
-	data, err := h.HouseRepository.CreateHouse(house)
+	house, err = h.HouseRepository.CreateHouse(house)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}
 		json.NewEncoder(w).Encode(response)
+		return
 	}
 
+	house, _ = h.HouseRepository.GetHouse(house.ID)
+
 	w.WriteHeader(http.StatusOK)
-	response := dto.SuccessResult{Code: http.StatusOK, Data: convertResponseHouse(data)}
+	response := dto.SuccessResult{Code: http.StatusOK, Data: house}
 	json.NewEncoder(w).Encode(response)
 }
+
+// func (h *handlerHouse) CreateHouse(w http.ResponseWriter, r *http.Request) {
+// 	w.Header().Set("Content-Type", "application/json")
+
+// 	request := new(housesdto.HouseRequest)
+// 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+// 		w.WriteHeader(http.StatusBadRequest)
+// 		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+// 		json.NewEncoder(w).Encode(response)
+// 		return
+// 	}
+
+// 	validation := validator.New()
+// 	err := validation.Struct(request)
+// 	if err != nil {
+// 		w.WriteHeader(http.StatusBadRequest)
+// 		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+// 		json.NewEncoder(w).Encode(response)
+// 		return
+// 	}
+
+// 	// data form pattern submit to pattern entity db user
+// 	house := models.House{
+// 		ID:        request.ID,
+// 		Name:      request.Name,
+// 		CityName:  request.CityName,
+// 		Address:   request.Address,
+// 		Price:     request.Price,
+// 		TypeRent:  request.TypeRent,
+// 		Amenities: request.Amenities,
+// 		Bedroom:   request.Bedroom,
+// 		Bathroom:  request.Bathroom,
+// 		Image:     datatypes.JSON(request.Image),
+// 	}
+
+// 	data, err := h.HouseRepository.CreateHouse(house)
+// 	if err != nil {
+// 		w.WriteHeader(http.StatusInternalServerError)
+// 		json.NewEncoder(w).Encode(err.Error())
+// 	}
+
+// 	w.WriteHeader(http.StatusOK)
+// 	response := dto.SuccessResult{Code: http.StatusOK, Data: convertResponseHouse(data)}
+// 	json.NewEncoder(w).Encode(response)
+// }
 
 func convertResponseHouse(u models.House) housesdto.HouseResponse {
 	return housesdto.HouseResponse{
 		ID:        u.ID,
 		Name:      u.Name,
-		City:      models.CityResponse(u.City),
+		CityName:  u.CityName,
 		Address:   u.Address,
 		Price:     u.Price,
 		TypeRent:  u.TypeRent,

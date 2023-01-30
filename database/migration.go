@@ -10,9 +10,8 @@ import (
 func RunMigration() {
 	err := mysql.DB.AutoMigrate(
 		&models.User{},
-		&models.ListAs{},
-		&models.City{},
-		&models.House{})
+		&models.House{},
+		&models.Transaction{})
 
 	if err != nil {
 		fmt.Println(err)
