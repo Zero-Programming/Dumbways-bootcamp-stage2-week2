@@ -58,7 +58,7 @@ func (h *handlerAuth) SignUp(w http.ResponseWriter, r *http.Request) {
 		Email:      request.Email,
 		Password:   password,
 		ListAsRole: request.ListAsRole,
-		Gendre:     request.Gender,
+		Gender:     request.Gender,
 		Phone:      request.Phone,
 		Address:    request.Address,
 		Image:      request.Image,

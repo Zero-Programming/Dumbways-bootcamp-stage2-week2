@@ -2,6 +2,8 @@ package housesdto
 
 import (
 	"housy/models"
+
+	"gorm.io/datatypes"
 )
 
 type HouseResponse struct {
@@ -11,8 +13,8 @@ type HouseResponse struct {
 	Address   string              `json:"address" `
 	Price     int                 `json:"price"`
 	TypeRent  string              `json:"type_rent"`
-	Amenities []string            `json:"amenities" `
+	Amenities datatypes.JSON      `json:"amenities" `
 	Bedroom   int                 `json:"bedroom" `
 	Bathroom  int                 `json:"bathroom" `
-	Image     []string            `json:"image"`
+	Image     datatypes.JSON      `json:"image"`
 }

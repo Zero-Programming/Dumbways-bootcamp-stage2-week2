@@ -11,7 +11,7 @@ type User struct {
 	Password   string    `json:"password" gorm:"type: varchar(255)"`
 	ListAsRole string    `json:"-" gorm:"type: varchar(225)"`
 	ListAs     ListAs    `json:"list_as" gorm:"foreignKey:ListAsRole"`
-	Gendre     string    `json:"gendre" gorm:"type: varchar(255)"`
+	Gender     string    `json:"gender" gorm:"type: varchar(255)"`
 	Phone      string    `json:"phone" gorm:"type: varchar(255)"`
 	Address    string    `json:"address" gorm:"type: varchar(225)"`
 	Image      string    `json:"image" gorm:"type: varchar(255)"`
@@ -26,7 +26,7 @@ type UserProfileRespone struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 	ListAs   ListAs `json:"list_as"`
-	Gendre   string `json:"gendre"`
+	Gender   string `json:"gender"`
 	Phone    string `json:"phone"`
 	Address  string `json:"address"`
 	Image    string `json:"imgae"`

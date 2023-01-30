@@ -60,7 +60,7 @@ func convertResponse(u models.User) usersdto.UserResponse {
 		Username: u.Username,
 		Password: u.Password,
 		ListAs:   models.ListAsResponse(u.ListAs),
-		Gendre:   u.Gendre,
+		Gendre:   u.Gender,
 		Phone:    u.Phone,
 		Address:  u.Address,
 		Image:    u.Image,
