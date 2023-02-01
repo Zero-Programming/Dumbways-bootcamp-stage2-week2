@@ -13,9 +13,9 @@ func HouseRoutes(r *mux.Router) {
 	houseRepository := repositories.RepositoryHouse(mysql.DB)
 	h := handlers.HandlerHouse(houseRepository)
 
-	// r.HandleFunc("/houses", h.FindHouses).Methods("GET")
-	r.HandleFunc("/houses", middleware.Auth(h.FindHouses)).Methods("GET")
-	r.HandleFunc("/house/{id}", h.GetHouse).Methods("GET")
-	// r.HandleFunc("/house", h.CreateHouse).Methods("POST")
+	r.HandleFunc("/houses", h.FindHouses).Methods("GET")
+	r.HandleFunc("/house/{id}", middleware.Auth(h.GetHouse)).Methods("GET")
 	r.HandleFunc("/house", middleware.Auth(middleware.UploadFile(h.CreateHouse))).Methods("POST")
+	r.HandleFunc("/house/{id}", h.DeleteHouse).Methods("DELETE")
+	r.HandleFunc("/house/{id}", middleware.Auth(middleware.UploadFile(h.UpdateHouse))).Methods("PATCH")
 }

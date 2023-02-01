@@ -56,7 +56,18 @@ func (h *handlerTransaction) GetTransaction(w http.ResponseWriter, r *http.Reque
 func (h *handlerTransaction) CreateTransaction(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	request := new(transactiondto.RequestTransaction)
+	HouseId, _ := strconv.Atoi(r.FormValue("house_id"))
+	UserId, _ := strconv.Atoi(r.FormValue("user_id"))
+	Total, _ := strconv.Atoi(r.FormValue("total"))
+	request := transactiondto.RequestTransaction{
+		CheckIn:       r.FormValue("check_in"),
+		CheckOut:      r.FormValue("check_out"),
+		HouseId:       HouseId,
+		UserId:        UserId,
+		Total:         Total,
+		StatusPayment: r.FormValue("status_payment"),
+	}
+
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
@@ -94,78 +105,96 @@ func (h *handlerTransaction) CreateTransaction(w http.ResponseWriter, r *http.Re
 	json.NewEncoder(w).Encode(response)
 }
 
-// func (h *handlerTransaction) UpdateThandlerTransaction(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("Content-Type", "application/json")
+func (h *handlerTransaction) UpdateTransaction(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 
-// 	request := new(transactiondto.RequestTransaction)
-// 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-// 		w.WriteHeader(http.StatusBadRequest)
-// 		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
-// 		json.NewEncoder(w).Encode(response)
-// 		return
-// 	}
+	HouseId, _ := strconv.Atoi(r.FormValue("house_id"))
+	UserId, _ := strconv.Atoi(r.FormValue("user_id"))
+	Total, _ := strconv.Atoi(r.FormValue("total"))
+	request := transactiondto.RequestTransaction{
+		CheckIn:       r.FormValue("check_in"),
+		CheckOut:      r.FormValue("check_out"),
+		HouseId:       HouseId,
+		UserId:        UserId,
+		Total:         Total,
+		StatusPayment: r.FormValue("status_payment"),
+	}
 
-// 	id, _ := strconv.Atoi(mux.Vars(r)["id"])
-// 	transaction, err := h.TransactionRepository.GetTransaction(int(id))
-// 	if err != nil {
-// 		w.WriteHeader(http.StatusBadRequest)
-// 		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
-// 		json.NewEncoder(w).Encode(response)
-// 		return
-// 	}
+	id, _ := strconv.Atoi(mux.Vars(r)["id"])
+	transaction, err := h.TransactionRepository.GetTransaction(int(id))
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
 
-// 	if request.CheckIn != "" {
-// 		transaction.CheckIn = request.CheckIn
-// 	}
+	if request.CheckIn != "" {
+		transaction.CheckIn = request.CheckIn
+	}
 
-// 	if request.CheckOut != "" {
-// 		transaction.CheckOut = request.CheckOut
-// 	}
+	if request.CheckOut != "" {
+		transaction.CheckOut = request.CheckOut
+	}
 
-// 	if request.HouseId !=  {
-// 		transaction.HouseId = request.HouseId
-// 	}
+	if request.HouseId != 0 {
+		transaction.HouseId = request.HouseId
+	}
 
-// 	data, err := h.UserRepository.UpdateUser(user)
-// 	if err != nil {
-// 		w.WriteHeader(http.StatusInternalServerError)
-// 		response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}
-// 		json.NewEncoder(w).Encode(response)
-// 		return
-// 	}
+	if request.UserId != 0 {
+		transaction.UserId = request.UserId
+	}
 
-// 	w.WriteHeader(http.StatusOK)
-// 	response := dto.SuccessResult{Code: http.StatusOK, Data: convertResponse(data)}
-// 	json.NewEncoder(w).Encode(response)
-// }
+	if request.Total != 0 {
+		transaction.Total = request.Total
+	}
 
-// func (h *handlerUser) DeleteUser(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("Content-Type", "application/json")
+	if request.StatusPayment != "" {
+		transaction.StatusPayment = request.StatusPayment
+	}
 
-// 	id, _ := strconv.Atoi(mux.Vars(r)["id"])
-// 	user, err := h.UserRepository.GetUser(id)
-// 	if err != nil {
-// 		w.WriteHeader(http.StatusBadRequest)
-// 		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
-// 		json.NewEncoder(w).Encode(response)
-// 		return
-// 	}
+	data, err := h.TransactionRepository.UpdateTransaction(transaction)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
 
-// 	data, err := h.UserRepository.DeleteUser(user)
-// 	if err != nil {
-// 		w.WriteHeader(http.StatusInternalServerError)
-// 		response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}
-// 		json.NewEncoder(w).Encode(response)
-// 		return
-// 	}
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Code: http.StatusOK, Data: data}
+	json.NewEncoder(w).Encode(response)
+}
 
-// 	w.WriteHeader(http.StatusOK)
-// 	response := dto.SuccessResult{Code: http.StatusOK, Data: convertResponse(data)}
-// 	json.NewEncoder(w).Encode(response)
-// }
+func (h *handlerTransaction) DeleteTransaction(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	id, _ := strconv.Atoi(mux.Vars(r)["id"])
+
+	transaction, err := h.TransactionRepository.GetTransaction(id)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	data, err := h.TransactionRepository.DeleteTransaction(transaction)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Code: http.StatusOK, Data: data}
+	json.NewEncoder(w).Encode(response)
+}
 
 func convertResponseTransaction(u models.Transaction) transactiondto.ResponseTransaction {
 	return transactiondto.ResponseTransaction{
+		ID:            u.ID,
 		CheckIn:       u.CheckIn,
 		CheckOut:      u.CheckOut,
 		HouseId:       u.HouseId,
